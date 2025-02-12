@@ -110,28 +110,7 @@
   </footer>
 
   <!-- Loading Animation Script -->
-  <script>
-    window.addEventListener('load', () => {
-      const hasVisited = sessionStorage.getItem('hasVisited');
-      const loader = document.querySelector('.loader-wrapper');
-
-      if (!hasVisited) {
-        // First visit - show loading animation and initialize chat
-        sessionStorage.setItem('hasVisited', 'true');
-        new ChatAssistant(); // Only for assistant.html
-        setTimeout(() => {
-          loader.classList.add('fade-out');
-          setTimeout(() => {
-            loader.style.display = 'none';
-          }, 500);
-        }, 1000);
-      } else {
-        // Return visit - hide loader immediately
-        loader.style.display = 'none';
-        new ChatAssistant(); // Only for assistant.html
-      }
-    });
-  </script>
+  <script src="loader.js"></script>
 
   <!-- Place this as the last script before closing body tag -->
   <script src="chat.js"></script>

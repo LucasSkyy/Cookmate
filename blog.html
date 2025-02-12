@@ -49,9 +49,9 @@
       <h1 class="text-4xl font-bold mb-6">Cooking Blog</h1>
 
       <!-- Blog Posts -->
-      <div class="space-y-8">
-        <!-- Blog Post 1 -->
-        <article class="bg-white/40 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all">
+      <div class="grid md:grid-cols-2 gap-8 text-left">
+        <a href="blog/mastering-spices.html"
+          class="p-6 bg-white/40 backdrop-blur-md rounded-xl shadow-lg transition-transform duration-300 hover:scale-105">
           <h2 class="text-2xl font-bold mb-4">Mastering Spices: A Complete Guide</h2>
           <div class="flex items-center gap-4 text-gray-600 mb-4">
             <span><i class="fas fa-calendar mr-2"></i>March 15, 2025</span>
@@ -59,10 +59,9 @@
           </div>
           <p class="text-gray-700 mb-4">Learn how to balance flavors with the right spices for any cuisine...</p>
           <button class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">Read More</button>
-        </article>
-
-        <!-- Blog Post 2 -->
-        <article class="bg-white/40 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all">
+        </a>
+        <a href="blog/knife-skills.html"
+          class="p-6 bg-white/40 backdrop-blur-md rounded-xl shadow-lg transition-transform duration-300 hover:scale-105">
           <h2 class="text-2xl font-bold mb-4">Knife Skills 101: Essential Techniques</h2>
           <div class="flex items-center gap-4 text-gray-600 mb-4">
             <span><i class="fas fa-calendar mr-2"></i>March 12, 2025</span>
@@ -70,7 +69,7 @@
           </div>
           <p class="text-gray-700 mb-4">Master the basic cutting techniques that every cook should know...</p>
           <button class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">Read More</button>
-        </article>
+        </a>
       </div>
     </div>
   </main>
@@ -86,26 +85,7 @@
   </footer>
 
   <!-- Loading Animation Script -->
-  <script>
-    window.addEventListener('load', () => {
-      const hasVisited = sessionStorage.getItem('hasVisited');
-      const loader = document.querySelector('.loader-wrapper');
-
-      if (!hasVisited) {
-        // First visit - show loading animation
-        sessionStorage.setItem('hasVisited', 'true');
-        setTimeout(() => {
-          loader.classList.add('fade-out');
-          setTimeout(() => {
-            loader.style.display = 'none';
-          }, 500);
-        }, 1000);
-      } else {
-        // Return visit - hide loader immediately
-        loader.style.display = 'none';
-      }
-    });
-  </script>
+  <script src="loader.js"></script>
 </body>
 
 </html>

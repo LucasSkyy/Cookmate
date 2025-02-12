@@ -16,24 +16,18 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 // Route handlers for HTML pages
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+const pages = {
+  '/': 'index.html',
+  '/assistant': 'assistant.html',
+  '/recipes': 'recipes.html',
+  '/blog': 'blog.html',
+  '/contact': 'contact.html'
+};
 
-app.get('/assistant', (req, res) => {
-  res.sendFile(path.join(__dirname, 'assistant.html'));
-});
-
-app.get('/recipes', (req, res) => {
-  res.sendFile(path.join(__dirname, 'recipes.html'));
-});
-
-app.get('/blog', (req, res) => {
-  res.sendFile(path.join(__dirname, 'blog.html'));
-});
-
-app.get('/contact', (req, res) => {
-  res.sendFile(path.join(__dirname, 'contact.html'));
+Object.entries(pages).forEach(([route, file]) => {
+  app.get(route, (req, res) => {
+    res.sendFile(path.join(__dirname, file));
+  });
 });
 
 // Chat endpoint

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookmate | Contact</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <link rel="icon" type="image/x-icon" href="/assets/cookmate.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-gradient-to-r from-yellow-200 via-orange-300 to-red-300 min-h-screen">
+  <!-- Loading Screen -->
+  <div class="loader-wrapper">
+    <div class="loader">
+      <img src="assets/cookmate.png" alt="Cooking Pot" class="cooking-pot">
+      <p class="loading-text">Preparing your experience...</p>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="bg-white/30 backdrop-blur-lg shadow-lg mx-4 mt-4 rounded-2xl max-w-7xl xl:mx-auto">
+    <div class="flex items-center justify-between px-8 py-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/cookmate.png" class="h-12 w-12" alt="Cookmate logo">
+        <span class="text-3xl font-bold">Cookmate</span>
+      </a>
+      <div class="hidden md:flex space-x-16 text-lg font-semibold mx-10">
+        <a href="index.html" class="hover:underline">Home</a>
+        <a href="assistant.html" class="hover:underline">AI Chat</a>
+        <a href="recipes.html" class="hover:underline">Recipes</a>
+        <a href="blog.html" class="hover:underline">Blog</a>
+        <a href="contact.html" class="hover:underline">Contact</a>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="assistant.html" class="px-6 py-3 bg-white rounded-xl font-bold transition-all 
+                   hover:scale-105 hover:shadow-lg active:scale-95">
+          <i class="fas fa-robot mr-2"></i>Try AI Chat
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="bg-white/30 backdrop-blur-lg rounded-2xl shadow-lg p-8">
+      <h1 class="text-4xl font-bold mb-6">Contact Us</h1>
+
+      <!-- Contact Form -->
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-6">
+          <h2 class="text-2xl font-bold">Get in Touch</h2>
+          <p class="text-gray-700">Have questions about Cookmate? We'd love to hear from you!</p>
+
+          <div class="space-y-4">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-envelope text-orange-500 text-xl"></i>
+              <span>support@cookmate.com</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <i class="fas fa-phone text-orange-500 text-xl"></i>
+              <span>+1 (555) 123-4567</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <i class="fas fa-location-dot text-orange-500 text-xl"></i>
+              <span>123 Kitchen Street, Foodville, FC 12345</span>
+            </div>
+          </div>
+        </div>
+
+        <form class="space-y-4">
+          <div>
+            <label class="block text-gray-700 mb-2">Name</label>
+            <input type="text" class="w-full px-4 py-2 rounded-lg bg-white/70 backdrop-blur-sm">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Email</label>
+            <input type="email" class="w-full px-4 py-2 rounded-lg bg-white/70 backdrop-blur-sm">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Message</label>
+            <textarea rows="4" class="w-full px-4 py-2 rounded-lg bg-white/70 backdrop-blur-sm"></textarea>
+          </div>
+          <button class="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all">
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white/30 backdrop-blur-lg text-center p-6 mt-8 mx-4 rounded-2xl shadow-lg">
+    <p class="text-gray-700 font-medium">© 2025 Cookmate | Kitchen Intelligence Platform</p>
+    <div class="flex justify-center gap-6 mt-4">
+      <a href="#" class="text-gray-600 hover:text-orange-500 transition"><i class="fab fa-github text-xl"></i></a>
+      <a href="#" class="text-gray-600 hover:text-orange-500 transition"><i class="fab fa-discord text-xl"></i></a>
+      <a href="#" class="text-gray-600 hover:text-orange-500 transition"><i class="fab fa-youtube text-xl"></i></a>
+    </div>
+  </footer>
+
+  <!-- Loading Animation Script -->
+  <script>
+    window.addEventListener('load', () => {
+      const hasVisited = sessionStorage.getItem('hasVisited');
+      const loader = document.querySelector('.loader-wrapper');
+
+      if (!hasVisited) {
+        // First visit - show loading animation
+        sessionStorage.setItem('hasVisited', 'true');
+        setTimeout(() => {
+          loader.classList.add('fade-out');
+          setTimeout(() => {
+            loader.style.display = 'none';
+          }, 500);
+        }, 1000);
+      } else {
+        // Return visit - hide loader immediately
+        loader.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>

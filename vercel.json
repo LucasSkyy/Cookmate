@@ -13,11 +13,26 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server.js"
+      "dest": "/server.js"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/public/assets/$1"
+    },
+    {
+      "src": "^/js/(.*)",
+      "dest": "/public/js/$1"
+    },
+    {
+      "src": "^/styles/(.*)",
+      "dest": "/public/styles/$1"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/server.js"
     }
   ]
 }

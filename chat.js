@@ -135,14 +135,14 @@ if (typeof window.ChatAssistant === 'undefined') {
         }
 
         const data = await response.json();
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        if (!data.choices?.[0]?.message?.content) {
           throw new Error('Invalid response format from server');
         }
 
         return data.choices[0].message.content;
       } catch (error) {
         console.error('AI Response Error:', error);
-        throw new Error('Failed to get AI response. Please try again.');
+        throw new Error(`Failed to get AI response: ${error.message}`);
       }
     }
 

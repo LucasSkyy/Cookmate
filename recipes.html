@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <link rel="icon" type="image/x-icon" href="/assets/cookmate.png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles/recipe.css">
   <style>
     /* Slide-in Card */
     .recipe-card {
@@ -55,10 +56,20 @@
       right: 20px;
       background-color: #ff5c5c;
       color: white;
-      padding: 10px 20px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       cursor: pointer;
       font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background-color: #ff3333;
+      transform: scale(1.1);
     }
 
     .ingredient-item {
@@ -68,6 +79,21 @@
 
     .ingredient-item i {
       margin-right: 10px;
+    }
+
+    /* Add styles for recipe content */
+    .recipe-instructions {
+      line-height: 1.6;
+    }
+
+    .recipe-instructions ol {
+      list-style-decimal;
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .recipe-instructions li {
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
@@ -111,42 +137,32 @@
 
       <!-- Search Form -->
       <div class="mb-8">
-        <!-- Tabs -->
         <div class="flex gap-4 mb-4">
-          <button id="searchTab" class="px-6 py-2 rounded-xl font-semibold bg-orange-500 text-white">Search Recipes</button>
-          <button id="recommendedTab" class="px-6 py-2 rounded-xl font-semibold bg-white/70">Recommended</button>
+          <input type="text" id="searchInput"
+            class="flex-1 px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            placeholder="Search for recipes...">
+          <button id="searchButton"
+            class="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all hover:scale-105 active:scale-95">
+            <i class="fas fa-search mr-2"></i>Search
+          </button>
         </div>
 
-        <div id="searchContent">
-          <div class="flex gap-4 mb-4">
-            <input type="text" id="searchInput"
-              class="flex-1 px-4 py-3 rounded-xl bg-white/70 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Search for recipes...">
-            <button id="searchButton"
-              class="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all hover:scale-105 active:scale-95">
-              <i class="fas fa-search mr-2"></i>Search
-            </button>
-          </div>
-          
-          <!-- Filters -->
-          <div class="flex gap-4 flex-wrap">
-            <select id="cuisine" class="px-4 py-2 rounded-lg bg-white/70">
-              <option value="">Any Cuisine</option>
-              <option value="italian">Italian</option>
-              <option value="mexican">Mexican</option>
-              <option value="indian">Indian</option>
-              <option value="chinese">Chinese</option>
-              <!-- Add more cuisines -->
-            </select>
+        <!-- Filters -->
+        <div class="flex gap-4 flex-wrap">
+          <select id="cuisine" class="px-4 py-2 rounded-lg bg-white/70">
+            <option value="">Any Cuisine</option>
+            <option value="italian">Italian</option>
+            <option value="mexican">Mexican</option>
+            <option value="indian">Indian</option>
+            <option value="chinese">Chinese</option>
+          </select>
 
-            <select id="diet" class="px-4 py-2 rounded-lg bg-white/70">
-              <option value="">Any Diet</option>
-              <option value="vegetarian">Vegetarian</option>
-              <option value="vegan">Vegan</option>
-              <option value="gluten-free">Gluten Free</option>
-              <!-- Add more diets -->
-            </select>
-          </div>
+          <select id="diet" class="px-4 py-2 rounded-lg bg-white/70">
+            <option value="">Any Diet</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="vegan">Vegan</option>
+            <option value="gluten-free">Gluten Free</option>
+          </select>
         </div>
       </div>
 
@@ -175,7 +191,7 @@
       <h3 class="font-semibold text-xl mb-2">Ingredients</h3>
       <ul id="ingredients" class="mb-4"></ul>
       <h3 class="font-semibold text-xl mb-2">Instructions</h3>
-      <p id="instructions" class="text-gray-700"></p>
+      <div id="instructions" class="text-gray-700"></div>
     </div>
   </div>
 
@@ -189,151 +205,9 @@
     </div>
   </footer>
 
-  <!-- Add Recipe Search Script -->
-  <script>
-    const API_KEY = '3cd74aa34a7e425ba362a4d2b32ae955';
-    const recipeGrid = document.getElementById('recipeGrid');
-    const searchButton = document.getElementById('searchButton');
-    const searchInput = document.getElementById('searchInput');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const cuisineSelect = document.getElementById('cuisine');
-    const dietSelect = document.getElementById('diet');
-    const recipeDetail = document.getElementById('recipeDetail');
-    const closeDetail = document.getElementById('closeDetail');
-    const searchTab = document.getElementById('searchTab');
-    const recommendedTab = document.getElementById('recommendedTab');
-    const searchContent = document.getElementById('searchContent');
-
-    async function searchRecipes() {
-      try {
-        loadingSpinner.classList.remove('hidden');
-        recipeGrid.innerHTML = '';
-
-        const query = searchInput.value;
-        const cuisine = cuisineSelect.value;
-        const diet = dietSelect.value;
-
-        const params = new URLSearchParams({
-          apiKey: API_KEY,
-          query: query,
-          number: 9,
-          ...(cuisine && { cuisine }),
-          ...(diet && { diet })
-        });
-
-        const response = await fetch(`https://api.spoonacular.com/recipes/complexSearch?${params}`);
-        const data = await response.json();
-
-        data.results.forEach(recipe => {
-          const recipeCard = `
-          <div class="recipe-card p-6 bg-white/40 backdrop-blur-md rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.02]" onclick="showRecipeDetail(${recipe.id})">
-            <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-48 object-cover rounded-xl mb-4">
-            <h3 class="text-xl font-bold mb-2">${recipe.title}</h3>
-            <div class="flex justify-between items-center">
-              <a href="assistant.html" 
-                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 inline-block">
-                Get Recipe Help
-              </a>
-            </div>
-          </div>
-        `;
-          recipeGrid.innerHTML += recipeCard;
-        });
-      } catch (error) {
-        console.error('Error fetching recipes:', error);
-        recipeGrid.innerHTML = '<p class="text-red-500">Error fetching recipes. Please try again.</p>';
-      } finally {
-        loadingSpinner.classList.add('hidden');
-      }
-    }
-
-    async function showRecipeDetail(recipeId) {
-      const response = await fetch(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${API_KEY}`);
-      const recipe = await response.json();
-
-      document.getElementById('recipeImage').src = recipe.image;
-      document.getElementById('recipeTitle').textContent = recipe.title;
-      document.getElementById('prepTime').textContent = `Prep time: ${recipe.readyInMinutes} minutes`;
-      document.getElementById('servings').textContent = `Servings: ${recipe.servings}`;
-      document.getElementById('ingredients').innerHTML = recipe.extendedIngredients.map(ingredient => `
-        <li class="ingredient-item"><i class="fas fa-check-circle text-green-500"></i> ${ingredient.name}</li>
-      `).join('');
-      document.getElementById('instructions').textContent = recipe.instructions;
-
-      recipeDetail.classList.add('open');
-    }
-
-    closeDetail.addEventListener('click', () => {
-      recipeDetail.classList.remove('open');
-    });
-
-    async function getRecommendedRecipes() {
-      try {
-        loadingSpinner.classList.remove('hidden');
-        recipeGrid.innerHTML = '';
-
-        const params = new URLSearchParams({
-          apiKey: API_KEY,
-          number: 9,
-          sort: 'popularity',
-          type: 'main course'
-        });
-
-        const response = await fetch(`https://api.spoonacular.com/recipes/random?${params}`);
-        const data = await response.json();
-
-        data.recipes.forEach(recipe => {
-          const recipeCard = `
-          <div class="recipe-card p-6 bg-white/40 backdrop-blur-md rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.02]" onclick="showRecipeDetail(${recipe.id})">
-            <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-48 object-cover rounded-xl mb-4">
-            <h3 class="text-xl font-bold mb-2">${recipe.title}</h3>
-            <div class="flex justify-between items-center">
-              <a href="assistant.html" 
-                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 inline-block">
-                Get Recipe Help
-              </a>
-            </div>
-          </div>
-        `;
-          recipeGrid.innerHTML += recipeCard;
-        });
-      } catch (error) {
-        console.error('Error fetching recommended recipes:', error);
-        recipeGrid.innerHTML = '<p class="text-red-500">Error fetching recipes. Please try again.</p>';
-      } finally {
-        loadingSpinner.classList.add('hidden');
-      }
-    }
-
-    searchTab.addEventListener('click', () => {
-      searchTab.classList.add('bg-orange-500', 'text-white');
-      searchTab.classList.remove('bg-white/70');
-      recommendedTab.classList.remove('bg-orange-500', 'text-white');
-      recommendedTab.classList.add('bg-white/70');
-      searchContent.style.display = 'block';
-      searchRecipes();
-    });
-
-    recommendedTab.addEventListener('click', () => {
-      recommendedTab.classList.add('bg-orange-500', 'text-white');
-      recommendedTab.classList.remove('bg-white/70');
-      searchTab.classList.remove('bg-orange-500', 'text-white');
-      searchTab.classList.add('bg-white/70');
-      searchContent.style.display = 'none';
-      getRecommendedRecipes();
-    });
-
-    searchButton.addEventListener('click', searchRecipes);
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchRecipes();
-    });
-
-    // Update initial load to show recommended recipes
-    getRecommendedRecipes();
-  </script>
-
-  <!-- Loading Animation Script -->
+  <!-- Scripts -->
   <script src="loader.js"></script>
+  <script src="js/recipe.js"></script>
 </body>
 
 </html>

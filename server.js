@@ -7,7 +7,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
 app.use('/api/chat', require('./api/chat'));
@@ -23,7 +23,7 @@ const pages = {
 
 Object.entries(pages).forEach(([route, file]) => {
   app.get(route, (req, res) => {
-    res.sendFile(path.join(__dirname, file));
+    res.sendFile(path.join(__dirname, 'public', file));
   });
 });
 

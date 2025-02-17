@@ -5,6 +5,11 @@ require('dotenv').config();
 
 const app = express();
 
+// Add this check at the start of your server
+if (!process.env.OPENAI_API_KEY) {
+  console.error('OPENAI_API_KEY is not set in environment variables!');
+}
+
 // Middleware with security headers
 app.use(cors());
 app.use(express.json());
@@ -14,6 +19,9 @@ app.use((req, res, next) => {
   res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
+
+// API routes
+app.use('/api/chat', require('./api/chat'));
 
 // Serve static files with caching headers
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -29,10 +37,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
-// API routes
-app.use('/api/chat', require('./api/chat'));
-
-// Route handlers for HTML pages with error handling
+// Route handler for main pages
 const pages = {
   '/': 'index.html',
   '/assistant': 'assistant.html',

@@ -16,16 +16,26 @@
       "dest": "/server.js"
     },
     {
-      "src": "^/assets/(.*)",
-      "dest": "/public/assets/$1"
-    },
-    {
       "src": "^/js/(.*)",
-      "dest": "/public/js/$1"
+      "dest": "/public/js/$1",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
     },
     {
       "src": "^/styles/(.*)",
       "dest": "/public/styles/$1"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/public/assets/$1"
+    },
+    {
+      "src": "^/loader\\.js$",
+      "dest": "/public/loader.js",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
     },
     {
       "handle": "filesystem"

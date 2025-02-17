@@ -30,6 +30,21 @@ Object.entries(pages).forEach(([route, file]) => {
   });
 });
 
+const systemMessage = {
+  role: "system",
+  content: `You are a helpful cooking assistant called Cookmate. You help users with recipes, cooking techniques, and culinary advice. Be friendly and concise.
+
+Format your responses using these markdown-style conventions:
+- Use **bold** for important terms, ingredients, and measurements
+- Use # for main titles, ## for subtitles, and ### for section headers
+- Use numbered lists (1. 2. 3.) for steps in recipes or procedures
+- Use bullet points (-) for ingredients or general lists
+- Use \`code\` for specific temperatures, times, or measurements
+- Use line breaks between sections for clarity
+- Start recipe names with ##
+- Use --- for separating major sections`
+};
+
 // Chat endpoint
 app.post("/api/chat", async (req, res) => {
   if (!OPENAI_API_KEY) {
@@ -46,10 +61,7 @@ app.post("/api/chat", async (req, res) => {
 
     // Add system message for context
     const conversationMessages = [
-      {
-        role: "system",
-        content: "You are a helpful cooking assistant called Cookmate. You help users with recipes, cooking techniques, and culinary advice. Be friendly and concise."
-      },
+      systemMessage,
       ...messages
     ];
 

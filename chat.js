@@ -70,10 +70,11 @@ if (typeof window.ChatAssistant === 'undefined') {
         const response = await fetch(this.apiEndpoint, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
           },
           body: JSON.stringify({
-            messages: this.messageHistory
+            messages: this.messageHistory.slice(-10)
           })
         });
 
@@ -84,35 +85,39 @@ if (typeof window.ChatAssistant === 'undefined') {
         }
 
         const data = await response.json();
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+          throw new Error('Invalid response format from server');
+        }
+
         return data.choices[0].message.content;
       } catch (error) {
         console.error('AI Response Error:', error);
-        throw error;
+        throw new Error('Failed to get AI response. Please try again.');
       }
     }
 
     displayMessage(message) {
       const chatContainer = document.querySelector('.chat-height');
       const messageDiv = document.createElement('div');
-      messageDiv.className = `p-4 rounded-xl mb-4 ${message.role === 'user'
-        ? 'bg-white/50 ml-12'
-        : 'bg-orange-100/50 mr-12'
+      messageDiv.className = `p-4 rounded-xl mb-4 message-entrance ${message.role === 'user' ? 'bg-white/50 ml-12' : 'bg-orange-100/50 mr-12'
         }`;
 
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'mr-2';
-      iconSpan.innerHTML = message.role === 'user'
-        ? '<i class="fas fa-user"></i>'
-        : '<i class="fas fa-robot"></i>';
+      // Sanitize the message content
+      const sanitizedContent = message.content
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 
-      const textSpan = document.createElement('span');
-      textSpan.textContent = message.content;
+      messageDiv.innerHTML = `
+        <span class="mr-2">
+          <i class="fas fa-${message.role === 'user' ? 'user' : 'robot'}"></i>
+        </span>
+        <span>${sanitizedContent}</span>
+      `;
 
-      messageDiv.appendChild(iconSpan);
-      messageDiv.appendChild(textSpan);
       chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      return messageDiv; // Return the element for potential removal (loading indicator)
+      return messageDiv;
     }
   }
 

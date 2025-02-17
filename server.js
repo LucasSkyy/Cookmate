@@ -37,40 +37,66 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const messages = req.body.messages.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    const messages = req.body.messages || [];
+
+    // Ensure messages is an array and has content
+    if (!Array.isArray(messages)) {
+      return res.status(400).json({ error: "Messages must be an array" });
+    }
 
     // Add system message for context
-    messages.unshift({
-      role: "system",
-      content: "You are a helpful cooking assistant called Cookmate. You help users with recipes, cooking techniques, and culinary advice. Be friendly and concise."
-    });
+    const conversationMessages = [
+      {
+        role: "system",
+        content: "You are a helpful cooking assistant called Cookmate. You help users with recipes, cooking techniques, and culinary advice. Be friendly and concise."
+      },
+      ...messages
+    ];
 
-    const response = await axios.post(OPENAI_API_URL, {
-      model: "gpt-3.5-turbo",
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 1000,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
+    const openAIResponse = await axios.post(
+      OPENAI_API_URL,
+      {
+        model: "gpt-3.5-turbo",
+        messages: conversationMessages,
+        temperature: 0.7,
+        max_tokens: 1000,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
       }
-    });
+    );
 
-    res.json({
+    // Check if we have a valid response
+    if (!openAIResponse.data?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from OpenAI');
+    }
+
+    // Send the response back to the client
+    return res.json({
       choices: [{
         message: {
-          content: response.data.choices[0].message.content
+          content: openAIResponse.data.choices[0].message.content
         }
       }]
     });
+
   } catch (error) {
-    console.error("OpenAI API Error:", error.response?.data || error.message);
-    res.status(500).json({
-      error: "Failed to fetch AI response",
+    console.error("OpenAI API Error:", error);
+
+    // Log detailed error information
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+    }
+
+    // Send a more specific error message
+    return res.status(500).json({
+      error: "Failed to get AI response",
       details: error.response?.data?.error?.message || error.message
     });
   }

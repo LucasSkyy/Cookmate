@@ -67,3 +67,70 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+
+/* Chat Interface */
+.chat-height {
+  height: calc(100vh - 320px);
+  min-height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.chat-height::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-height::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-height::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.message-entrance {
+  animation: messageEntrance 0.3s ease-out;
+}
+
+.chat-input-container {
+  position: relative;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  margin-top: 1rem;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.chat-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+.send-button {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #f97316;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.send-button:hover {
+  color: #ea580c;
+  transform: translateY(-50%) scale(1.1);
+}

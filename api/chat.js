@@ -1,38 +1,53 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-require('dotenv').config();
 
 router.post('/', async (req, res) => {
   try {
     const { messages } = req.body;
 
-    // Prepare messages for OpenAI
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    if (!messages || !Array.isArray(messages)) {
+      console.log('Invalid messages format:', messages); // Debug log
+      return res.status(400).json({ error: 'Invalid messages format' });
+    }
 
-    // Add system message for context
-    formattedMessages.unshift({
-      role: "system",
-      content: "You are Cookmate, an AI cooking assistant. You help users with recipes, cooking techniques, and kitchen advice. Be friendly, helpful, and knowledgeable about cooking. When suggesting recipes, include [RECIPE_ID:123456] format for recipe IDs when available."
-    });
+    console.log('Sending messages to OpenAI:', messages); // Debug log
 
-    // Make request to OpenAI API
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: "gpt-3.5-turbo",
-      messages: formattedMessages,
-      temperature: 0.7,
-      max_tokens: 500
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
+    const formattedMessages = [
+      {
+        role: "system",
+        content: "You are Cookmate AI, a helpful cooking assistant. Format your responses with bold titles using '**' (e.g., '**Ingredients:**'). When providing recipes or instructions, use clear sections like:\n\n**Recipe Name:**\n**Ingredients:**\n**Instructions:**\n**Tips:**\n\nUse bullet points or numbered lists for steps and ingredients. Keep responses practical and engaging."
+      },
+      ...messages
+    ];
+
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OpenAI API key is missing!');
+      return res.status(500).json({ error: 'API configuration error' });
+    }
+
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: "gpt-3.5-turbo",
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 500
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
 
-    // Send response back to client
+    console.log('OpenAI Response:', response.data); // Debug log
+
+    if (!response.data?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid API response format');
+    }
+
     res.json({
       choices: [{
         message: {
@@ -43,9 +58,9 @@ router.post('/', async (req, res) => {
 
   } catch (error) {
     console.error('Chat API Error:', error.response?.data || error.message);
-    res.status(500).json({
+    res.status(error.response?.status || 500).json({
       error: 'Failed to get AI response',
-      details: error.response?.data || error.message
+      details: error.message
     });
   }
 });

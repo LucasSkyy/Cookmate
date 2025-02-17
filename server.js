@@ -22,6 +22,10 @@ app.use(express.static(path.join(__dirname, 'public'), {
     if (path.endsWith('.html')) {
       res.setHeader('Cache-Control', 'no-cache');
     }
+    // Set correct MIME types
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
   }
 }));
 

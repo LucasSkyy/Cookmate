@@ -27,10 +27,15 @@ if (typeof window.ChatAssistant === 'undefined') {
     }
 
     formatMessage(content) {
-      // Handle bold text (both ** and __ syntax)
-      content = content.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
+      // First, check for recipe IDs and store them
+      const recipeIds = [];
+      content = content.replace(/\[RECIPE_ID:(\d+)\]/g, (match, id) => {
+        recipeIds.push(id);
+        return ''; // Remove the ID from the content
+      });
 
-      // Handle italics (both * and _ syntax)
+      // Apply existing formatting
+      content = content.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
       content = content.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
 
       // Handle numbered lists
@@ -41,19 +46,32 @@ if (typeof window.ChatAssistant === 'undefined') {
       content = content.replace(/^[-*•]\s+(.+)$/gm, '<li>$1</li>');
       content = content.replace(/(?<!<\/ol>)(<li>.*<\/li>)/s, '<ul>$1</ul>');
 
-      // Handle line breaks
+      // Handle line breaks (ensure double line breaks are preserved)
       content = content.replace(/\n\n/g, '<br><br>');
 
-      // Handle headings (### for h3, ## for h2, # for h1)
+      // Handle headings
       content = content.replace(/^###\s+(.+)$/gm, '<h3 class="text-xl font-bold my-2">$1</h3>');
       content = content.replace(/^##\s+(.+)$/gm, '<h2 class="text-2xl font-bold my-3">$1</h2>');
       content = content.replace(/^#\s+(.+)$/gm, '<h1 class="text-3xl font-bold my-4">$1</h1>');
 
-      // Handle code blocks or recipe steps
+      // Handle code blocks
       content = content.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded">$1</code>');
 
       // Handle horizontal rules
       content = content.replace(/^---$/gm, '<hr class="my-4 border-t border-gray-300">');
+
+      // Add recipe buttons if recipe IDs were found
+      if (recipeIds.length > 0) {
+        content += '<div class="mt-4 flex gap-2">';
+        recipeIds.forEach(id => {
+          content += `
+            <a href="recipes.html?recipe=${id}" 
+               class="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all">
+              <i class="fas fa-search mr-2"></i>View Recipe
+            </a>`;
+        });
+        content += '</div>';
+      }
 
       return content;
     }
@@ -134,16 +152,17 @@ if (typeof window.ChatAssistant === 'undefined') {
       messageDiv.className = `p-4 rounded-xl mb-4 message-entrance ${message.role === 'user' ? 'bg-white/50 ml-12' : 'bg-orange-100/50 mr-12'
         }`;
 
-      // Format the message content if it's from the assistant
       const formattedContent = message.role === 'assistant'
         ? this.formatMessage(message.content)
         : message.content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
       messageDiv.innerHTML = `
-        <span class="mr-2">
-          <i class="fas fa-${message.role === 'user' ? 'user' : 'robot'}"></i>
-        </span>
-        <span class="message-content">${formattedContent}</span>
+        <div class="flex items-start">
+          <span class="mr-2 mt-1">
+            <i class="fas fa-${message.role === 'user' ? 'user' : 'robot'}"></i>
+          </span>
+          <div class="message-content flex-1">${formattedContent}</div>
+        </div>
       `;
 
       chatContainer.appendChild(messageDiv);

@@ -8,6 +8,20 @@ const dietSelect = document.getElementById('diet');
 const recipeDetail = document.getElementById('recipeDetail');
 const closeDetail = document.getElementById('closeDetail');
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Check for recipe ID in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const recipeId = urlParams.get('recipe');
+
+  if (recipeId) {
+    // Show the recipe detail immediately
+    showRecipeDetail(recipeId);
+  } else {
+    // Load initial recipes as normal
+    searchRecipes();
+  }
+});
+
 async function searchRecipes() {
   try {
     loadingSpinner.classList.remove('hidden');
@@ -109,7 +123,4 @@ closeDetail.addEventListener('click', () => {
 searchButton.addEventListener('click', searchRecipes);
 searchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') searchRecipes();
-});
-
-// Load initial recipes
-searchRecipes(); 
+}); 

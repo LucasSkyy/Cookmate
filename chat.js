@@ -2,7 +2,7 @@
 if (typeof window.ChatAssistant === 'undefined') {
   window.ChatAssistant = class {
     constructor() {
-      this.apiEndpoint = 'http://localhost:3000/api/chat';
+      this.apiEndpoint = '/api/chat';
       this.messageHistory = [{
         role: 'assistant',
         content: "Hi there! I'm your Cookmate AI. What would you like to cook today? 🍳"
